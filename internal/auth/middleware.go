@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/usadamasa/hackernews/internal/pkg/users"
+	"github.com/usadamasa/hackernews/internal/users"
 	"github.com/usadamasa/hackernews/pkg/jwt"
 )
 

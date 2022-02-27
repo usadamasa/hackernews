@@ -50,6 +50,24 @@ func GetUserIdByUsername(username string) (int, error) {
 	return ID, err
 }
 
+func (user *User) Authnticate() bool {
+	stmt, err := database.Db.Prepare("SELECT Password FROM Users WHERE Username = ?")
+	if err != nil {
+		log.Fatal(err)
+	}
+	row := stmt.QueryRow(user.Username)
+
+	var hashedPassword string
+	err = row.Scan(&hashedPassword)
+	if err != nil {
+		if err != sql.ErrNoRows {
+			return false
+		}
+		log.Fatal(err)
+	}
+	return CheckPasswordHash(user.Password, hashedPassword)
+}
+
 func HashPassword(password string) (string, error) {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
 	return string(bytes), err
