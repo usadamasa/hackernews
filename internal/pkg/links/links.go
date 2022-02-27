@@ -19,6 +19,8 @@ func (link Link) Save() int64 {
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer stmt.Close()
+
 	res, err := stmt.Exec(link.Title, link.Address)
 	if err != nil {
 		log.Fatal(err)
@@ -31,4 +33,31 @@ func (link Link) Save() int64 {
 	}
 	log.Print("Row inserted!")
 	return id
+}
+
+func GetAll() []Link {
+	stmt, err := database.Db.Prepare("select id, title, address from Links")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer stmt.Close()
+
+	rows, err := stmt.Query()
+	if err != nil {
+		log.Fatal(err)
+	}
+	var links []Link
+	for rows.Next() {
+		var link Link
+		err := rows.Scan(&link.ID, &link.Title, &link.Address)
+		if err != nil {
+			log.Fatal(err)
+		}
+		links = append(links, link)
+	}
+	if err = rows.Err(); err != nil {
+		log.Fatal(err)
+	}
+
+	return links
 }
